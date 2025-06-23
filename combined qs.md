@@ -1,11 +1,11 @@
 Here are day 1 questions.
 
 ### Question 1:
-A 10-year-old child presents with migratory joint pain and swelling two weeks after recovering from a streptococcal pharyngitis. Which of the following best explains the pathogenesis of this condition?
-A. Direct damage by autoantibodies.
-B. Direct streptococcal pyogenes infection of the joints.
-C. Direct damage from exotoxins of the bacteria.
-**D. Direct damage by antibodies that are produced against bacterial antigens.**
+A 10-year-old child presents with migratory joint pain and swelling two weeks after recovering from a streptococcal pharyngitis. Which of the following best explains the pathogenesis of this condition?  
+A. Direct damage by autoantibodies.  
+B. Direct streptococcal pyogenes infection of the joints.  
+C. Direct damage from exotoxins of the bacteria.  
+**D. Direct damage by antibodies that are produced against bacterial antigens.**  
 
 **Explanation:**
 This condition is rheumatic fever, an autoimmune response triggered by a streptococcal infection.
