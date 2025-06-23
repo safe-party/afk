@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Practice</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #question-container { max-width: 800px; margin: auto; }
+        .options label { display: block; margin: 8px 0; }
+        #feedback { margin-top: 10px; font-weight: bold; }
+        #navigation { margin-top: 20px; }
+        button { padding: 6px 12px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <div id="question-container">
+        <h2 id="q-title"></h2>
+        <p id="q-text"></p>
+        <div class="options" id="options"></div>
+        <div id="feedback"></div>
+        <div id="explanation" style="display:none; margin-top:10px;"></div>
+        <div id="navigation">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+    </div>
+<script>
+let questions = [];
+let current = 0;
+
+function parseQuestions(text) {
+    const lines = text.split(/\r?\n/);
+    const qRegex = /^###\s+Question\s+(\d+):/;
+    const optionRegex = /^\s*(?:\*\*)?([A-D])\.\s*(.+?)(?:\*\*)?$/;
+    let i = 0;
+    while (i < lines.length) {
+        const qMatch = lines[i].match(qRegex);
+        if (qMatch) {
+            const number = parseInt(qMatch[1], 10);
+            i++;
+            let qText = '';
+            while (i < lines.length && !optionRegex.test(lines[i])) {
+                qText += lines[i].trim() + ' ';
+                i++;
+            }
+            const options = [];
+            let correct = -1;
+            while (i < lines.length && optionRegex.test(lines[i])) {
+                const line = lines[i];
+                const isCorrect = /^\s*\*\*/.test(line);
+                const match = line.replace(/\*\*/g, '').match(/^([A-D])\.\s*(.+)$/);
+                if (match) {
+                    options.push(match[2].trim());
+                    if (isCorrect) correct = options.length - 1;
+                }
+                i++;
+            }
+            let explanation = '';
+            if (i < lines.length && lines[i].toLowerCase().includes('explanation')) {
+                i++; // skip explanation header
+                while (i < lines.length && !/^---/.test(lines[i]) && !qRegex.test(lines[i])) {
+                    explanation += lines[i] + '\n';
+                    i++;
+                }
+            }
+            while (i < lines.length && /^---/.test(lines[i])) i++;
+            questions.push({number, qText: qText.trim(), options, correct, explanation: explanation.trim()});
+        } else {
+            i++;
+        }
+    }
+}
+
+function showQuestion(index) {
+    const q = questions[index];
+    document.getElementById('q-title').textContent = 'Question ' + q.number;
+    document.getElementById('q-text').textContent = q.qText;
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'option';
+        radio.value = idx;
+        radio.addEventListener('change', () => checkAnswer(idx));
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(' ' + opt));
+        optionsDiv.appendChild(label);
+    });
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('explanation').innerHTML = '';
+    document.getElementById('prev').disabled = index === 0;
+    document.getElementById('next').disabled = index === questions.length - 1;
+}
+
+function checkAnswer(idx) {
+    const q = questions[current];
+    const feedback = document.getElementById('feedback');
+    if (idx === q.correct) {
+        feedback.textContent = 'Correct!';
+        feedback.style.color = 'green';
+    } else {
+        feedback.textContent = 'Incorrect.';
+        feedback.style.color = 'red';
+    }
+    const expDiv = document.getElementById('explanation');
+    expDiv.textContent = q.explanation;
+    expDiv.style.display = 'block';
+}
+
+function prevQuestion() {
+    if (current > 0) {
+        current--;
+        showQuestion(current);
+    }
+}
+function nextQuestion() {
+    if (current < questions.length - 1) {
+        current++;
+        showQuestion(current);
+    }
+}
+
+document.getElementById('prev').addEventListener('click', prevQuestion);
+document.getElementById('next').addEventListener('click', nextQuestion);
+
+fetch('combined%20qs.md')
+    .then(r => r.text())
+    .then(t => {
+        parseQuestions(t);
+        showQuestion(0);
+    });
+</script>
+</body>
+</html>
