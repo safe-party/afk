@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question & Answer Bank</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+<div class="container" id="login-container">
+    <h2>Login</h2>
+    <label>Username: <input type="text" id="username"></label><br />
+    <label>Password: <input type="password" id="password"></label><br />
+    <button onclick="login()">Login</button>
+    <p id="error" style="color:red"></p>
+</div>
+
+<div class="container" id="content" style="display:none;">
+<h1>Question & Answer Bank</h1>
 <p>Here are day 1 questions.</p>
 <h3 id="question-1">Question 1:</h3>
 <p>A 10-year-old child presents with migratory joint pain and swelling
@@ -3408,3 +3429,18 @@ cavity, the dentin is clearly exposed. This means the lesion must be at
 least a code 5 or 6, which falls under the category of <strong>extensive
 caries</strong>. Combined with the soft texture, the diagnosis is
 <strong>extensive caries, active</strong>.</p>
+</div>
+<script>
+function login() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    if (user === 'purpose' && pass === 'clearafk') {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+    } else {
+        document.getElementById('error').textContent = 'Invalid credentials';
+    }
+}
+</script>
+</body>
+</html>

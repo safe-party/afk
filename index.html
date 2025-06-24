@@ -43,7 +43,15 @@
     </style>
 </head>
 <body>
-    <div class="container" id="content">
+    <div class="container" id="login-container">
+        <h2>Login</h2>
+        <label>Username: <input type="text" id="username"></label><br />
+        <label>Password: <input type="password" id="password"></label><br />
+        <button onclick="login()">Login</button>
+        <p id="error" style="color:red"></p>
+    </div>
+
+    <div class="container" id="content" style="display:none;">
         <h1>Question & Answer Bank</h1>
     </div>
     <script>
@@ -92,17 +100,18 @@
         return questions;
     }
 
-    fetch('combined%20qs.md')
-        .then(r => r.text())
-        .then(t => {
-            const qs = parseQuestions(t);
-            const container = document.getElementById('content');
-            qs.forEach(q => {
-                const section = document.createElement('div');
-                section.className = 'question';
-                const title = document.createElement('h3');
-                title.textContent = `Question ${q.number}`;
-                section.appendChild(title);
+    function loadQuestions() {
+        fetch('combined%20qs.md')
+            .then(r => r.text())
+            .then(t => {
+                const qs = parseQuestions(t);
+                const container = document.getElementById('content');
+                qs.forEach(q => {
+                    const section = document.createElement('div');
+                    section.className = 'question';
+                    const title = document.createElement('h3');
+                    title.textContent = `Question ${q.number}`;
+                    section.appendChild(title);
                 const p = document.createElement('p');
                 p.textContent = q.qText;
                 section.appendChild(p);
@@ -119,9 +128,23 @@
                 exp.className = 'explanation';
                 exp.textContent = q.explanation;
                 section.appendChild(exp);
-                container.appendChild(section);
+                    container.appendChild(section);
+                });
             });
-        });
+    }
+
+    function login() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        if (user === 'purpose' && pass === 'clearafk') {
+            document.getElementById('login-container').style.display = 'none';
+            const content = document.getElementById('content');
+            content.style.display = 'block';
+            loadQuestions();
+        } else {
+            document.getElementById('error').textContent = 'Invalid credentials';
+        }
+    }
     </script>
 </body>
 </html>
