@@ -40,10 +40,33 @@
             padding: 10px;
             border-radius: 4px;
         }
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #login-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-    <div class="container" id="content">
+    <div id="login-overlay">
+        <div id="login-box">
+            <h2>Please Login</h2>
+            <label>Username: <input type="text" id="username"></label><br>
+            <label>Password: <input type="password" id="password"></label><br>
+            <button id="login-button">Login</button>
+        </div>
+    </div>
+    <div class="container" id="content" style="display:none">
         <h1>Question & Answer Bank</h1>
     </div>
     <script>
@@ -92,36 +115,56 @@
         return questions;
     }
 
-    fetch('combined%20qs.md')
-        .then(r => r.text())
-        .then(t => {
-            const qs = parseQuestions(t);
-            const container = document.getElementById('content');
-            qs.forEach(q => {
-                const section = document.createElement('div');
-                section.className = 'question';
-                const title = document.createElement('h3');
-                title.textContent = `Question ${q.number}`;
-                section.appendChild(title);
-                const p = document.createElement('p');
-                p.textContent = q.qText;
-                section.appendChild(p);
-                const ul = document.createElement('ul');
-                ul.className = 'options';
-                q.options.forEach((opt, idx) => {
-                    const li = document.createElement('li');
-                    if (idx === q.correct) li.className = 'correct';
-                    li.textContent = String.fromCharCode(65 + idx) + '. ' + opt;
-                    ul.appendChild(li);
+    function loadQuestions() {
+        fetch('combined%20qs.md')
+            .then(r => r.text())
+            .then(t => {
+                const qs = parseQuestions(t);
+                const container = document.getElementById('content');
+                qs.forEach(q => {
+                    const section = document.createElement('div');
+                    section.className = 'question';
+                    const title = document.createElement('h3');
+                    title.textContent = `Question ${q.number}`;
+                    section.appendChild(title);
+                    const p = document.createElement('p');
+                    p.textContent = q.qText;
+                    section.appendChild(p);
+                    const ul = document.createElement('ul');
+                    ul.className = 'options';
+                    q.options.forEach((opt, idx) => {
+                        const li = document.createElement('li');
+                        if (idx === q.correct) li.className = 'correct';
+                        li.textContent = String.fromCharCode(65 + idx) + '. ' + opt;
+                        ul.appendChild(li);
+                    });
+                    section.appendChild(ul);
+                    const exp = document.createElement('div');
+                    exp.className = 'explanation';
+                    exp.textContent = q.explanation;
+                    section.appendChild(exp);
+                    container.appendChild(section);
                 });
-                section.appendChild(ul);
-                const exp = document.createElement('div');
-                exp.className = 'explanation';
-                exp.textContent = q.explanation;
-                section.appendChild(exp);
-                container.appendChild(section);
             });
-        });
+    }
+
+    function attemptLogin() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        if (user === 'purpose' && pass === 'clearafk') {
+            document.getElementById('login-overlay').style.display = 'none';
+            const content = document.getElementById('content');
+            content.style.display = 'block';
+            loadQuestions();
+        } else {
+            alert('Invalid credentials');
+        }
+    }
+
+    document.getElementById('login-button').addEventListener('click', attemptLogin);
+    document.getElementById('password').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') attemptLogin();
+    });
     </script>
 </body>
 </html>
